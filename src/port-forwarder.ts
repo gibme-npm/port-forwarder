@@ -86,6 +86,7 @@ export default class PortForwarder extends EventEmitter {
 
         this.server.on('listening', () => this.emit('listening', options.ip, options.port));
         this.server.on('close', () => this.emit('close'));
+        this.server.on('error', error => this.emit('error', error));
         this.server.on('connection', async (socket: Socket) => {
             this.emit('connection', socket, this.options.port);
 

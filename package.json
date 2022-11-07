@@ -1,6 +1,6 @@
 {
   "name": "@gibme/port-forwarder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple port forward helper/service",
   "main": "dist/port-forwarder.js",
   "types": "dist/port-forwarder.d.ts",
