@@ -32,6 +32,11 @@
     dotenv "^16.0.3"
     node-cache "^5.1.2"
 
+"@gibme/tcp-server@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@gibme/tcp-server/-/tcp-server-1.0.0.tgz#d493c4f4551f322d27231ab55ac378f939c01623"
+  integrity sha512-mmwsG6ZY9D3TKH2iakibKr2fr0oHlsABVJORyRVv2+ZXZfJVdyVQ0KB6if1KlmBGzNdYC5LgIwX76Zp/ugRNhw==
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.7.tgz#38aec044c6c828f6ed51d5d7ae3d9b9faf6dbb0f"

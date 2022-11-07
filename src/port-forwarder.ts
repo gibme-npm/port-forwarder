@@ -3,7 +3,8 @@
 // Please see the included LICENSE file for more information.
 
 import { EventEmitter } from 'events';
-import { createConnection, createServer, Server, Socket, isIP } from 'net';
+import TCPServer, { createServer } from '@gibme/tcp-server';
+import { createConnection, Socket, isIP } from 'net';
 import LazyStorage from '@gibme/lazy-storage';
 import { networkInterfaces as osNetworkInterfaces } from 'os';
 
@@ -50,7 +51,7 @@ const networkInterfaces = (): string[] => {
  */
 export default class PortForwarder extends EventEmitter {
     public readonly options: IPortForwarderOptionsFinal;
-    public readonly server: Server;
+    public readonly server: TCPServer;
     public readonly interfaces: string[] = networkInterfaces();
     public readonly sessions: LazyStorage;
 
@@ -110,14 +111,23 @@ export default class PortForwarder extends EventEmitter {
         return super.on(event, listener);
     }
 
+    /**
+     * Returns our listening port
+     */
     public get port (): number {
         return this.options.port;
     }
 
+    /**
+     * Returns our listening interface
+     */
     public get ip (): string {
         return this.options.ip;
     }
 
+    /**
+     * Returns out timeout
+     */
     public get timeout (): number {
         return this.options.timeout;
     }
@@ -129,15 +139,24 @@ export default class PortForwarder extends EventEmitter {
      * @param socket
      * @param ip
      * @param port
+     * @param timeout
+     * @param keepAlive
      */
-    public async forward (socket: Socket, ip: string, port: number): Promise<boolean> {
+    public async forward (
+        socket: Socket,
+        ip: string,
+        port: number,
+        timeout = this.timeout,
+        keepAlive = this.options.keepalive
+    ): Promise<boolean> {
         const hangup = async (conn: Socket): Promise<void> => {
             this.sessions.del({ ip: socket.remoteAddress, port: socket.remotePort });
 
             await this.hangup(conn);
         };
 
-        socket.setTimeout(this.timeout);
+        socket.setTimeout(timeout);
+        socket.setKeepAlive(keepAlive);
 
         return new Promise((resolve, reject) => {
             if (!socket.remoteAddress || !socket.remotePort || !socket.isPaused()) {
@@ -147,8 +166,8 @@ export default class PortForwarder extends EventEmitter {
             const connection = createConnection({
                 host: ip,
                 port,
-                keepAlive: this.options.keepalive,
-                timeout: this.timeout
+                keepAlive,
+                timeout
             }, () => {
                 if (!socket.remoteAddress || !socket.remotePort) {
                     return resolve(false);
@@ -253,37 +272,13 @@ export default class PortForwarder extends EventEmitter {
      * Starts the server
      */
     public async start (): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (this.server.listening) {
-                throw new Error('Server is already listening');
-            }
-
-            this.server.once('error', error => {
-                return reject(error);
-            });
-
-            this.server.listen(this.port, this.ip, () => {
-                this.server.removeAllListeners('error');
-
-                this.server.on('error', error => this.emit('error', error));
-
-                return resolve();
-            });
-        });
+        return this.server.start(this.port, this.ip);
     }
 
     /**
      * Stops the server
      */
     public async stop (): Promise<void> {
-        return new Promise(resolve => {
-            if (!this.server.listening) {
-                return resolve();
-            }
-
-            this.server.close(() => {
-                return resolve();
-            });
-        });
+        return this.server.stop();
     }
 }
