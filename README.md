@@ -1,5 +1,11 @@
 # Simple TCP Port Forwarding Server
 
+## Documentation
+
+[https://gibme-npm.github.io/port-forwarder/](https://gibme-npm.github.io/port-forwarder/)
+
+## Sample Code
+
 ### Static Forwarding
 
 ```typescript

@@ -1,0 +1,11 @@
+{
+  "out": "./docs",
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "entryPoints": [
+    "./src/port-forwarder.ts"
+  ],
+  "disableSources": true,
+  "hideGenerator": true,
+  "githubPages": true
+}

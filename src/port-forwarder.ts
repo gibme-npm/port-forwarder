@@ -1,6 +1,22 @@
-// Copyright (c) 2016-2022 Brandon Lehmann
+// Copyright (c) 2016-2022, Brandon Lehmann <brandonlehmann@gmail.com>
 //
-// Please see the included LICENSE file for more information.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 import { EventEmitter } from 'events';
 import TCPServer, { createServer } from '@gibme/tcp-server';
@@ -8,30 +24,31 @@ import { createConnection, Socket, isIP } from 'net';
 import LazyStorage from '@gibme/lazy-storage';
 import { networkInterfaces as osNetworkInterfaces } from 'os';
 
-interface EndPoint {
+export interface IP {
     ip: string;
+}
+
+export interface Port {
     port: number;
 }
 
-interface IForwardSession extends EndPoint {
+export interface EndPoint extends Port, IP {}
+
+export interface IForwardSession extends EndPoint {
     forward: EndPoint;
 }
 
-interface IPortForwarderOptionalOptionals {
-    ip: string;
+export interface OptionalPortForwarderOptions extends IP {
     timeout: number;
     keepalive: boolean;
     remote: EndPoint;
 }
 
-interface IPortForwarderOptions extends Partial<IPortForwarderOptionalOptionals> {
-    port: number;
-}
+export interface PortForwarderOptions extends Port, Partial<OptionalPortForwarderOptions> {}
 
-interface IPortForwarderOptionsFinal extends IPortForwarderOptionalOptionals {
-    port: number;
-}
+export interface PortForwarderOptionsFinal extends Port, OptionalPortForwarderOptions {}
 
+/** @ignore */
 const networkInterfaces = (): string[] => {
     const interfaces = osNetworkInterfaces();
 
@@ -50,7 +67,7 @@ const networkInterfaces = (): string[] => {
  * Simple TCP port forwarding service with tracking
  */
 export default class PortForwarder extends EventEmitter {
-    public readonly options: IPortForwarderOptionsFinal;
+    public readonly options: PortForwarderOptionsFinal;
     public readonly server: TCPServer;
     public readonly interfaces: string[] = networkInterfaces();
     public readonly sessions: LazyStorage;
@@ -60,7 +77,7 @@ export default class PortForwarder extends EventEmitter {
      *
      * @param options
      */
-    constructor (options: IPortForwarderOptions) {
+    constructor (options: PortForwarderOptions) {
         super();
 
         options.ip ||= '0.0.0.0';
@@ -283,3 +300,5 @@ export default class PortForwarder extends EventEmitter {
         return this.server.stop();
     }
 }
+
+export { PortForwarder };
