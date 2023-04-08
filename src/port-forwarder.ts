@@ -21,7 +21,7 @@
 import { EventEmitter } from 'events';
 import TCPServer, { createServer } from '@gibme/tcp-server';
 import { createConnection, Socket, isIP } from 'net';
-import LazyStorage from '@gibme/lazy-storage';
+import MemoryCache from '@gibme/cache/memory';
 import { networkInterfaces as osNetworkInterfaces } from 'os';
 
 export interface IP {
@@ -70,7 +70,7 @@ export default class PortForwarder extends EventEmitter {
     public readonly options: PortForwarderOptionsFinal;
     public readonly server: TCPServer;
     public readonly interfaces: string[] = networkInterfaces();
-    public readonly sessions: LazyStorage;
+    public readonly sessions: MemoryCache;
 
     /**
      * Creates a new instance of the port forwarding service
@@ -94,7 +94,7 @@ export default class PortForwarder extends EventEmitter {
 
         this.options = options as any;
 
-        this.sessions = new LazyStorage({ stdTTL: 0 });
+        this.sessions = new MemoryCache({ stdTTL: 0 });
 
         this.server = createServer({
             pauseOnConnect: true,
@@ -168,7 +168,7 @@ export default class PortForwarder extends EventEmitter {
         keepAlive = this.options.keepalive
     ): Promise<boolean> {
         const hangup = async (conn: Socket): Promise<void> => {
-            this.sessions.del({ ip: socket.remoteAddress, port: socket.remotePort });
+            await this.sessions.del({ ip: socket.remoteAddress, port: socket.remotePort });
 
             await this.hangup(conn);
         };
@@ -186,7 +186,7 @@ export default class PortForwarder extends EventEmitter {
                 port,
                 keepAlive,
                 timeout
-            }, () => {
+            }, async () => {
                 if (!socket.remoteAddress || !socket.remotePort) {
                     return resolve(false);
                 }
@@ -214,7 +214,7 @@ export default class PortForwarder extends EventEmitter {
                     }
                 };
 
-                this.sessions.set({ ip: socket.remoteAddress, port: socket.remotePort }, client);
+                await this.sessions.set({ ip: socket.remoteAddress, port: socket.remotePort }, client);
 
                 this.emit('forward', socket.remoteAddress, socket.remotePort, ip, port);
 
@@ -273,8 +273,8 @@ export default class PortForwarder extends EventEmitter {
     /**
      * Returns the list of current sessions
      */
-    public list (): IForwardSession[] {
-        const values = this.sessions.list<IForwardSession>()
+    public async list (): Promise<IForwardSession[]> {
+        const values = (await this.sessions.list<IForwardSession>())
             .values();
 
         const sessions: IForwardSession[] = [];
