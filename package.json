@@ -1,6 +1,6 @@
 {
   "name": "@gibme/port-forwarder",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A simple port forward helper/service",
   "main": "dist/port-forwarder.js",
   "types": "dist/port-forwarder.d.ts",
@@ -37,24 +37,24 @@
     "email": "brandonlehmann@gmail.com"
   },
   "dependencies": {
-    "@gibme/cache": "^1.0.2",
-    "@gibme/tcp-server": "^1.0.4",
-    "dotenv": "^16.3.1"
+    "@gibme/cache": "^1.1.1",
+    "@gibme/tcp-server": "^1.0.6",
+    "dotenv": "^16.4.1"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^20.4.8",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.7",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
     "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.28.0",
-    "eslint-plugin-n": "^16.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "mocha": "^10.2.0",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.24.8",
-    "typescript": "^5.1.6"
+    "ts-node": "^10.9.2",
+    "typedoc": "^0.25.7",
+    "typescript": "^5.3.3"
   }
 }
