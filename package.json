@@ -1,6 +1,6 @@
 {
   "name": "@gibme/port-forwarder",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A simple port forward helper/service",
   "main": "dist/port-forwarder.js",
   "types": "dist/port-forwarder.d.ts",
@@ -37,9 +37,9 @@
     "email": "brandonlehmann@gmail.com"
   },
   "dependencies": {
-    "@gibme/cache": "^1.1.10",
-    "@gibme/tcp-server": "^1.0.10",
-    "dotenv": "^16.4.5"
+    "@gibme/cache": "^1.1.12",
+    "@gibme/tcp-server": "^1.0.11",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
