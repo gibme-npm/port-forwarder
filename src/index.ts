@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022, Brandon Lehmann <brandonlehmann@gmail.com>
+// Copyright (c) 2016-2025, Brandon Lehmann <brandonlehmann@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,6 @@ import { createConnection, Socket, isIP } from 'net';
 import MemoryCache from '@gibme/cache/memory';
 import { networkInterfaces as osNetworkInterfaces } from 'os';
 
-export interface IP {
-    ip: string;
-}
-
-export interface Port {
-    port: number;
-}
-
-export interface EndPoint extends Port, IP {}
-
-export interface IForwardSession extends EndPoint {
-    forward: EndPoint;
-}
-
-export interface OptionalPortForwarderOptions extends IP {
-    timeout: number;
-    keepalive: boolean;
-    remote: EndPoint;
-}
-
-export interface PortForwarderOptions extends Port, Partial<OptionalPortForwarderOptions> {}
-
-export interface PortForwarderOptionsFinal extends Port, OptionalPortForwarderOptions {}
-
 /** @ignore */
 const networkInterfaces = (): string[] => {
     const interfaces = osNetworkInterfaces();
@@ -66,8 +42,7 @@ const networkInterfaces = (): string[] => {
 /**
  * Simple TCP port forwarding service with tracking
  */
-export default class PortForwarder extends EventEmitter {
-    public readonly options: PortForwarderOptionsFinal;
+export class PortForwarder extends EventEmitter {
     public readonly server: TCPServer;
     public readonly interfaces: string[] = networkInterfaces();
     public readonly sessions: MemoryCache;
@@ -77,22 +52,20 @@ export default class PortForwarder extends EventEmitter {
      *
      * @param options
      */
-    constructor (options: PortForwarderOptions) {
+    constructor (public readonly options: PortForwarder.Config) {
         super();
 
-        options.ip ||= '0.0.0.0';
-        options.timeout ||= 15 * 60_000;
-        options.keepalive ??= false;
+        this.options.ip ??= '0.0.0.0';
+        this.options.timeout ??= 15 * 60_000;
+        this.options.keepalive ??= false;
 
-        if (isIP(options.ip) === 0) {
-            throw new Error(`${options.ip} is not a valid IP address`);
+        if (isIP(this.options.ip) === 0) {
+            throw new Error(`${this.options.ip} is not a valid IP address`);
         }
 
-        if (!this.interfaces.includes(options.ip)) {
-            throw new Error(`${options.ip} is not a locally bound IP address`);
+        if (!this.interfaces.includes(this.options.ip)) {
+            throw new Error(`${this.options.ip} is not a locally bound IP address`);
         }
-
-        this.options = options as any;
 
         this.sessions = new MemoryCache({ stdTTL: 0 });
 
@@ -140,14 +113,14 @@ export default class PortForwarder extends EventEmitter {
      * Returns our listening interface
      */
     public get ip (): string {
-        return this.options.ip;
+        return this.options.ip ?? '0.0.0.0';
     }
 
     /**
      * Returns out timeout
      */
     public get timeout (): number {
-        return this.options.timeout;
+        return this.options.timeout ?? 5 * 60_000;
     }
 
     /**
@@ -205,7 +178,7 @@ export default class PortForwarder extends EventEmitter {
 
                 socket.resume();
 
-                const client: IForwardSession = {
+                const client: PortForwarder.Session = {
                     ip: socket.remoteAddress,
                     port: socket.remotePort,
                     forward: {
@@ -273,11 +246,11 @@ export default class PortForwarder extends EventEmitter {
     /**
      * Returns the list of current sessions
      */
-    public async list (): Promise<IForwardSession[]> {
-        const values = (await this.sessions.list<IForwardSession>())
+    public async list (): Promise<PortForwarder.Session[]> {
+        const values = (await this.sessions.list<PortForwarder.Session>())
             .values();
 
-        const sessions: IForwardSession[] = [];
+        const sessions: PortForwarder.Session[] = [];
 
         for (const session of values) {
             sessions.push(session);
@@ -301,4 +274,23 @@ export default class PortForwarder extends EventEmitter {
     }
 }
 
-export { PortForwarder };
+export namespace PortForwarder {
+    export type EndPoint = {
+        ip: string;
+        port: number;
+    }
+
+    export type Session = EndPoint & {
+        forward: EndPoint;
+    }
+
+    export type Config = {
+        port: number;
+        ip?: string;
+        timeout?: number;
+        keepalive?: boolean;
+        remote?: EndPoint;
+    }
+}
+
+export default PortForwarder;
