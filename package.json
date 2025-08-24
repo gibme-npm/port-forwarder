@@ -1,6 +1,6 @@
 {
   "name": "@gibme/port-forwarder",
-  "version": "2.0.0",
+  "version": "20.0.0",
   "description": "A simple port forward helper/service",
   "main": "dist/index.js",
   "types": "dist/index.ts",
@@ -29,7 +29,7 @@
     "url": "https://github.com/gibme-npm/port-forwarder/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "engineStrict": true,
   "author": {
@@ -37,13 +37,13 @@
     "email": "brandonlehmann@gmail.com"
   },
   "dependencies": {
-    "@gibme/cache": "^2.0.0",
-    "@gibme/tcp-server": "^1.0.14",
-    "dotenv": "^16.5.0"
+    "@gibme/cache": "^20.0.0",
+    "@gibme/tcp-server": "^20.0.0",
+    "dotenv": "^17.2.1"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^22.15.17",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "eslint": "^8.56.0",
@@ -52,9 +52,9 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
-    "mocha": "^10.2.0",
+    "mocha": "^11.7.1",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
