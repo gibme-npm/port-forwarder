@@ -37,7 +37,7 @@
     "email": "brandonlehmann@gmail.com"
   },
   "dependencies": {
-    "@gibme/cache": "^20.0.1",
+    "@gibme/cache": "^20.0.2",
     "@gibme/tcp-server": "^20.0.0",
     "dotenv": "^17.2.1"
   },
